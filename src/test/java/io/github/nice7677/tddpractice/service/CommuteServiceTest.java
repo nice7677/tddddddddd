@@ -25,6 +25,9 @@ class CommuteServiceTest {
             .name("이진우")
             .build();
 
+    private final LocalDateTime now = LocalDateTime.now();
+    private final LocalDate today = now.toLocalDate();
+
     @DisplayName("출근을 한다.")
     @Test
     void goToWork() {
@@ -33,9 +36,6 @@ class CommuteServiceTest {
                 .id(1L)
                 .name("이진우")
                 .build();
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate today = now.toLocalDate();
 
         GoToWorkResponse response = commuteService.goToWork(user, now);
 
@@ -55,9 +55,6 @@ class CommuteServiceTest {
                 .name("이진우")
                 .build();
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate today = now.toLocalDate();
-
         GoToWorkResponse goToWorkResponse = commuteService.goToWork(user, now);
 
         GetOffWorkResponse response = commuteService.getOffWork(goToWorkResponse.getShifteeId(), now);
@@ -75,7 +72,7 @@ class CommuteServiceTest {
         Long shifteeId = 99L;
 
         assertThatThrownBy(() -> {
-            commuteService.getOffWork(shifteeId);
+            commuteService.getOffWork(shifteeId, now);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재 하지 않는시프티 내역 입니다.");
 

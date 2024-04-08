@@ -18,10 +18,10 @@ public class CommuteService {
 
     public GoToWorkResponse goToWork(User user, LocalDateTime now) {
 
-        Shiftee goToWorkShiftee = Shiftee.builder()
+        Shiftee shiftee = Shiftee.builder()
                 .user(user)
                 .build();
-        goToWorkShiftee.goToWork(now);
+        shiftee.goToWork(now);
 
         Shiftee goToWorkShiftee = shifteeRepository.save(shiftee);
 
@@ -43,7 +43,7 @@ public class CommuteService {
 
         return GetOffWorkResponse.builder()
                 .getOffWorkTime(now)
-                .date(shiftee.getDate())
+                .date(getOffWorkShiftee.getDate())
                 .success(true)
                 .build();
 
