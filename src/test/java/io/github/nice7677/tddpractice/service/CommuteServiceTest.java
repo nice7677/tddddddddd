@@ -37,8 +37,6 @@ class CommuteServiceTest {
                 .extracting("date", "goToWorkTime", "success")
                 .containsExactly(today, now, true);
 
-        System.out.println(response);
-
     }
 
     @DisplayName("퇴근을 한다.")
@@ -61,9 +59,6 @@ class CommuteServiceTest {
         assertThat(response)
                 .extracting("date", "getOffWorkTime", "success")
                 .containsExactly(today, now, true);
-
-
-        System.out.println(response);
 
     }
 
