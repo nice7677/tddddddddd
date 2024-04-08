@@ -19,13 +19,13 @@ public class CommuteService {
 
     public GoToWorkResponse goToWork(User user) {
 
-        Shiftee goToWorkShiftee = Shiftee.builder()
+        Shiftee shiftee = Shiftee.builder()
+                .user(user)
                 .goToWorkTime(LocalDateTime.now())
                 .date(LocalDate.now())
                 .build();
-        goToWorkShiftee.setUser(user);
 
-        shifteeRepository.save(goToWorkShiftee);
+        Shiftee goToWorkShiftee = shifteeRepository.save(shiftee);
 
         return GoToWorkResponse.builder()
                 .shifteeId(goToWorkShiftee.getId())
@@ -41,11 +41,11 @@ public class CommuteService {
         Shiftee shiftee = shifteeRepository.findById(shifteeId);
         shiftee.setGetOffWorkTime(LocalDateTime.now());
 
-        shifteeRepository.save(shiftee);
+        Shiftee getOffWorkShiftee = shifteeRepository.save(shiftee);
 
         return GetOffWorkResponse.builder()
-                .getOffWorkTime(shiftee.getGetOffWorkTime())
-                .date(shiftee.getDate())
+                .getOffWorkTime(getOffWorkShiftee.getGetOffWorkTime())
+                .date(getOffWorkShiftee.getDate())
                 .success(true)
                 .build();
 
