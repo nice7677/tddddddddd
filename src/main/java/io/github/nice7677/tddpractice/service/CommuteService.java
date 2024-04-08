@@ -8,7 +8,6 @@ import io.github.nice7677.tddpractice.service.dto.response.GoToWorkResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
@@ -17,34 +16,33 @@ public class CommuteService {
 
     private final ShifteeRepository shifteeRepository;
 
-    public GoToWorkResponse goToWork(User user) {
+    public GoToWorkResponse goToWork(User user, LocalDateTime now) {
 
         Shiftee goToWorkShiftee = Shiftee.builder()
-                .goToWorkTime(LocalDateTime.now())
-                .date(LocalDate.now())
+                .user(user)
                 .build();
-        goToWorkShiftee.setUser(user);
+        goToWorkShiftee.goToWork(now);
 
         shifteeRepository.save(goToWorkShiftee);
 
         return GoToWorkResponse.builder()
                 .shifteeId(goToWorkShiftee.getId())
-                .getOffWorkTime(goToWorkShiftee.getGoToWorkTime())
-                .date(goToWorkShiftee.getDate())
+                .goToWorkTime(now)
+                .date(now.toLocalDate())
                 .success(true)
                 .build();
 
     }
 
-    public GetOffWorkResponse getOffWork(Long shifteeId) {
+    public GetOffWorkResponse getOffWork(Long shifteeId, LocalDateTime now) {
 
         Shiftee shiftee = shifteeRepository.findById(shifteeId);
-        shiftee.setGetOffWorkTime(LocalDateTime.now());
+        shiftee.getOffWork(now);
 
         shifteeRepository.save(shiftee);
 
         return GetOffWorkResponse.builder()
-                .getOffWorkTime(shiftee.getGetOffWorkTime())
+                .getOffWorkTime(now)
                 .date(shiftee.getDate())
                 .success(true)
                 .build();

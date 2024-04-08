@@ -16,7 +16,7 @@ public class GoToWorkResponse {
 
     private LocalDate date;
 
-    private LocalDateTime getOffWorkTime;
+    private LocalDateTime goToWorkTime;
 
     private Boolean success;
 

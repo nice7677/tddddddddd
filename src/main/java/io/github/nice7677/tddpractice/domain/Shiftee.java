@@ -1,12 +1,12 @@
 package io.github.nice7677.tddpractice.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 public class Shiftee {
@@ -25,5 +25,16 @@ public class Shiftee {
     private LocalDateTime getOffWorkTime;
 
     private LocalDate date;
+
+
+
+    public void goToWork(LocalDateTime now) {
+        this.date = now.toLocalDate();
+        this.goToWorkTime = now;
+    }
+
+    public void getOffWork(LocalDateTime now) {
+        this.goToWorkTime = now;
+    }
 
 }

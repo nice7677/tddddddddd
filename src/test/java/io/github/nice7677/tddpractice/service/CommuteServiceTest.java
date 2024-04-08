@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -25,9 +28,14 @@ class CommuteServiceTest {
                 .name("이진우")
                 .build();
 
-        GoToWorkResponse response = commuteService.goToWork(user);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
 
-        assertThat(response.getSuccess()).isTrue();
+        GoToWorkResponse response = commuteService.goToWork(user, now);
+
+        assertThat(response)
+                .extracting("date", "goToWorkTime", "success")
+                .containsExactly(today, now, true);
 
         System.out.println(response);
 
@@ -43,11 +51,17 @@ class CommuteServiceTest {
                 .name("이진우")
                 .build();
 
-        GoToWorkResponse goToWorkResponse = commuteService.goToWork(user);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDate today = now.toLocalDate();
 
-        GetOffWorkResponse response = commuteService.getOffWork(goToWorkResponse.getShifteeId());
+        GoToWorkResponse goToWorkResponse = commuteService.goToWork(user, now);
 
-        assertThat(response.getSuccess()).isTrue();
+        GetOffWorkResponse response = commuteService.getOffWork(goToWorkResponse.getShifteeId(), now);
+
+        assertThat(response)
+                .extracting("date", "getOffWorkTime", "success")
+                .containsExactly(today, now, true);
+
 
         System.out.println(response);
 
