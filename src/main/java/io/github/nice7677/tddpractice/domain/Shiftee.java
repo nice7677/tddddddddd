@@ -34,7 +34,7 @@ public class Shiftee {
     }
 
     public void getOffWork(LocalDateTime now) {
-        this.goToWorkTime = now;
+        this.getOffWorkTime = now;
     }
 
 }

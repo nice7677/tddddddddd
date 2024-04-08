@@ -1,23 +1,34 @@
 package io.github.nice7677.tddpractice.service;
 
+import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.introspector.ConstructorPropertiesArbitraryIntrospector;
+import io.github.nice7677.tddpractice.domain.Shiftee;
 import io.github.nice7677.tddpractice.domain.User;
+import io.github.nice7677.tddpractice.repository.ShifteeRepository;
 import io.github.nice7677.tddpractice.service.dto.response.GetOffWorkResponse;
 import io.github.nice7677.tddpractice.service.dto.response.GoToWorkResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CommuteServiceTest {
 
-    @Autowired
+    @Mock
+    ShifteeRepository shifteeRepository;
+
+    @InjectMocks
     CommuteService commuteService;
 
     private final User user = User.builder()
@@ -27,21 +38,26 @@ class CommuteServiceTest {
 
     private final LocalDateTime now = LocalDateTime.now();
     private final LocalDate today = now.toLocalDate();
+    private final Long shifteeId = 1L;
 
     @DisplayName("출근을 한다.")
     @Test
     void goToWork() {
 
-        User user = User.builder()
-                .id(1L)
-                .name("이진우")
+        Shiftee shiftee = Shiftee.builder()
+                .id(shifteeId)
+                .user(user)
+                .goToWorkTime(now)
+                .date(now.toLocalDate())
                 .build();
+
+        given(shifteeRepository.save(any(Shiftee.class))).willReturn(shiftee);
 
         GoToWorkResponse response = commuteService.goToWork(user, now);
 
         assertThat(response)
-                .extracting("date", "goToWorkTime", "success")
-                .containsExactly(today, now, true);
+                .extracting("shifteeId", "date", "goToWorkTime", "success")
+                .containsExactly(shifteeId, today, now, true);
 
     }
 
@@ -49,19 +65,22 @@ class CommuteServiceTest {
     @Test
     void getOffWork() {
 
-
-        User user = User.builder()
-                .id(1L)
-                .name("이진우")
+        Shiftee shiftee = Shiftee.builder()
+                .id(shifteeId)
+                .user(user)
+                .goToWorkTime(now)
+                .date(now.toLocalDate())
                 .build();
+        shiftee.getOffWork(now);
 
-        GoToWorkResponse goToWorkResponse = commuteService.goToWork(user, now);
+        given(shifteeRepository.findById(shiftee.getId())).willReturn(shiftee);
+        given(shifteeRepository.save(any(Shiftee.class))).willReturn(shiftee);
 
-        GetOffWorkResponse response = commuteService.getOffWork(goToWorkResponse.getShifteeId(), now);
+        GetOffWorkResponse response = commuteService.getOffWork(shiftee.getId(), now);
 
         assertThat(response)
-                .extracting("date", "getOffWorkTime", "success")
-                .containsExactly(today, now, true);
+                .extracting("shifteeId", "date", "getOffWorkTime", "success")
+                .containsExactly(shiftee.getId(), shiftee.getDate(), now, true);
 
     }
 
@@ -69,7 +88,7 @@ class CommuteServiceTest {
     @Test
     void getOffWorkException() {
 
-        Long shifteeId = 99L;
+        given(shifteeRepository.findById(anyLong())).willThrow(new IllegalArgumentException("존재 하지 않는시프티 내역 입니다."));
 
         assertThatThrownBy(() -> {
             commuteService.getOffWork(shifteeId, now);

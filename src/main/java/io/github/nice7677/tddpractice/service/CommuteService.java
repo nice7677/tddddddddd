@@ -27,8 +27,8 @@ public class CommuteService {
 
         return GoToWorkResponse.builder()
                 .shifteeId(goToWorkShiftee.getId())
-                .goToWorkTime(now)
-                .date(now.toLocalDate())
+                .goToWorkTime(goToWorkShiftee.getGoToWorkTime())
+                .date(goToWorkShiftee.getDate())
                 .success(true)
                 .build();
 
@@ -42,7 +42,8 @@ public class CommuteService {
         Shiftee getOffWorkShiftee = shifteeRepository.save(shiftee);
 
         return GetOffWorkResponse.builder()
-                .getOffWorkTime(now)
+                .shifteeId(getOffWorkShiftee.getId())
+                .getOffWorkTime(getOffWorkShiftee.getGetOffWorkTime())
                 .date(getOffWorkShiftee.getDate())
                 .success(true)
                 .build();

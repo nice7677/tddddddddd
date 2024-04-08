@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 public class GetOffWorkResponse {
 
+    private Long shifteeId;
+
     private LocalDate date;
 
     private LocalDateTime getOffWorkTime;
