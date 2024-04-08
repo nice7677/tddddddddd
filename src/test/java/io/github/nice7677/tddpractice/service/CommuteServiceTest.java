@@ -12,12 +12,18 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 class CommuteServiceTest {
 
     @Autowired
     CommuteService commuteService;
+
+    private final User user = User.builder()
+            .id(1L)
+            .name("이진우")
+            .build();
 
     @DisplayName("출근을 한다.")
     @Test
@@ -59,6 +65,19 @@ class CommuteServiceTest {
         assertThat(response)
                 .extracting("date", "getOffWorkTime", "success")
                 .containsExactly(today, now, true);
+
+    }
+
+    @DisplayName("퇴근 요청을 했는데 내역을 찾지 못해서 에러가 난다.")
+    @Test
+    void getOffWorkException() {
+
+        Long shifteeId = 99L;
+
+        assertThatThrownBy(() -> {
+            commuteService.getOffWork(shifteeId);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재 하지 않는시프티 내역 입니다.");
 
     }
 
